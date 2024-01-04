@@ -1,22 +1,10 @@
-<?PHP 
-
-include('FormInfoClass.php');
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration Output</title>
-</head>
-<body>
-
 <?php
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Create an instance of the FormInfoClass
+    // Include the file where FormInfoClass is defined
+    include 'index.php';
+
     $formData = new FormInfoClass();
 
-    // Set values from the form
     $formData->setLastName($_POST["txtLastName"]);
     $formData->setFirstName($_POST["txtFirstName"]);
     $formData->setMiddleInitial($_POST["txtMiddleInitial"]);
@@ -27,23 +15,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $formData->setUsername($_POST["txtUsername"]);
     $formData->setPassword($_POST["txtPassword"]);
 
-    // Display the entered data
-    echo "<h2>Registration Information:</h2>";
-    echo "<p><strong>Last Name:</strong> " . $formData->getLastName() . "</p>";
-    echo "<p><strong>First Name:</strong> " . $formData->getFirstName() . "</p>";
-    echo "<p><strong>Middle Initial:</strong> " . $formData->getMiddleInitial() . "</p>";
-    echo "<p><strong>Age:</strong> " . $formData->getAge() . "</p>";
-    echo "<p><strong>Contact Number:</strong> " . $formData->getContact() . "</p>";
-    echo "<p><strong>Email:</strong> " . $formData->getEmail() . "</p>";
-    echo "<p><strong>Address:</strong> " . $formData->getAddress() . "</p>";
-    echo "<p><strong>Username:</strong> " . $formData->getUsername() . "</p>";
-    echo "<p><strong>Password:</strong> " . $formData->getPassword() . "</p>";
+    // Validate inputs
+    $validationResult = $formData->validateInputs();
+
+    if ($validationResult === true) {
+        // Database connection details
+        $servername = "localhost";
+        $username = "root";
+        $password = "";
+        $dbname = "dbregistration";
+
+        // Create connection
+        $conn = new mysqli($servername, $username, $password, $dbname);
+
+        // Check connection
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+
+        // Insert data into the database
+        $sql = "INSERT INTO userinfo (lastName, firstName, middleInitial, age, contactNo, email, address, username, password)
+                VALUES ('" . $formData->getLastName() . "', '" . $formData->getFirstName() . "', '" . $formData->getMiddleInitial() . "',
+                        '" . $formData->getAge() . "', '" . $formData->getContact() . "', '" . $formData->getEmail() . "',
+                        '" . $formData->getAddress() . "', '" . $formData->getUsername() . "', '" . $formData->getPassword() . "')";
+
+        if ($conn->query($sql) === TRUE) {
+            echo "Registration successful. Data has been saved to the database.";
+        } else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
+
+        // Close the database connection
+        $conn->close();
+    } else {
+        echo "<p>Validation Error: " . $validationResult . "</p>";
+    }
 } else {
-    // Handle the case where the form is not submitted
     echo "<p>Form not submitted.</p>";
 }
 ?>
 
-
-</body>
-</html>
