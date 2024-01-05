@@ -1,5 +1,24 @@
-<?PHP 
-    include_once('config.php');
+<?php
+include_once('config.php');
+session_start();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $enteredUsername = $_POST["txtUSN"];
+    $enteredPassword = $_POST["txtPassword"];
+
+    $sql = "SELECT * FROM userinfo WHERE username = '$enteredUsername' AND password = '$enteredPassword'";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        $_SESSION['username'] = $enteredUsername;
+        echo '<script type="text/javascript">alert("Login successful!");</script>';
+        header("Location: welcome.php");
+        exit(); 
+    } else {
+        echo '<script type="text/javascript">alert("Invalid UserName or Password!");</script>';
+    }
+    $conn->close();
+}
 ?>
 <html lang="en">
 <head>
@@ -218,37 +237,7 @@
                 </div> 
             </form>
         </div> 
-
     </div> 
-    <?php
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        include "index.php";
-        $servername = "localhost";
-        $username = "root";
-        $password = "";
-        $dbname = "dbregistration";
-
-        $conn = new mysqli($servername, $username, $password, $dbname);
-
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-
-        $enteredUsername = $_POST["txtUSN"];
-        $enteredPassword = $_POST["txtPassword"];
-
-        $sql = "SELECT * FROM userinfo WHERE username = '$enteredUsername' AND password = '$enteredPassword'";
-        $result = $conn->query($sql);
-
-        if ($result->num_rows > 0) {
-            echo '<script type="text/javascript">alert("Login successful!");</script>';
-        } else {
-            echo '<script type="text/javascript">alert("Invalid UserName or Password!");</script>';
-        }
-
-        $conn->close();
-    }
-    ?>
     </section> 
 </body>
 </html>

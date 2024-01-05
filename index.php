@@ -127,6 +127,8 @@
             return $this->Password;
         }
     }
+
+
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['btnSubmit'])) {
         // Include the file where FormInfoClass is defined
     
@@ -147,10 +149,8 @@
     
         if ($validationResult === true) {
           
-        include_once('config.php');
-
-    
-            // Insert data into the database
+        include('config.php');
+            
             $sql = "INSERT INTO userinfo (lastName, firstName, middleInitial, age, contactNo, email, address, username, password)
                     VALUES ('" . $formData->getLastName() . "', '" . $formData->getFirstName() . "', '" . $formData->getMiddleInitial() . "',
                             '" . $formData->getAge() . "', '" . $formData->getContact() . "', '" . $formData->getEmail() . "',
