@@ -1,3 +1,6 @@
+<?PHP 
+    include_once('config.php');
+?>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -205,7 +208,7 @@
                     </div> 
 
                     <div class="links"> 
-                        <a href="#">Forgot Password</a> <a href="#">Signup</a> 
+                        <a href="#">Forgot Password</a> <a href="index.php">Signup</a> 
                     </div> 
 
                     <div class="inputBox"> 
@@ -246,6 +249,6 @@
         $conn->close();
     }
     ?>
-    </section> <!-- partial --> 
+    </section> 
 </body>
 </html>

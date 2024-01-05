@@ -1,57 +1,59 @@
 <?php
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Include the file where FormInfoClass is defined
-    include 'index.php';
-
-    $formData = new FormInfoClass();
-
-    $formData->setLastName($_POST["txtLastName"]);
-    $formData->setFirstName($_POST["txtFirstName"]);
-    $formData->setMiddleInitial($_POST["txtMiddleInitial"]);
-    $formData->setAge($_POST["txtAge"]);
-    $formData->setContact($_POST["txtContact"]);
-    $formData->setEmail($_POST["txtEmail"]);
-    $formData->setAddress($_POST["txtAddress"]);
-    $formData->setUsername($_POST["txtUsername"]);
-    $formData->setPassword($_POST["txtPassword"]);
-
-    // Validate inputs
-    $validationResult = $formData->validateInputs();
-
-    if ($validationResult === true) {
-        // Database connection details
-        $servername = "localhost";
-        $username = "root";
-        $password = "";
-        $dbname = "dbregistration";
-
-        // Create connection
-        $conn = new mysqli($servername, $username, $password, $dbname);
-
-        // Check connection
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-
-        // Insert data into the database
-        $sql = "INSERT INTO userinfo (lastName, firstName, middleInitial, age, contactNo, email, address, username, password)
-                VALUES ('" . $formData->getLastName() . "', '" . $formData->getFirstName() . "', '" . $formData->getMiddleInitial() . "',
-                        '" . $formData->getAge() . "', '" . $formData->getContact() . "', '" . $formData->getEmail() . "',
-                        '" . $formData->getAddress() . "', '" . $formData->getUsername() . "', '" . $formData->getPassword() . "')";
-
-        if ($conn->query($sql) === TRUE) {
-            echo "Registration successful. Data has been saved to the database.";
-        } else {
-            echo "Error: " . $sql . "<br>" . $conn->error;
-        }
-
-        // Close the database connection
-        $conn->close();
-    } else {
-        echo "<p>Validation Error: " . $validationResult . "</p>";
-    }
-} else {
-    echo "<p>Form not submitted.</p>";
-}
+include_once('config.php');
 ?>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Information</title>
+    <!-- Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="card" style="width: 30rem;">
+        <div class="card-body">
+            <?php
+            $sql = "SELECT * FROM userinfo ORDER BY userID DESC LIMIT 1";
+            $result = $conn->query($sql);
+
+            if ($result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+                echo '<div class="alert alert-success" role="alert">';
+                echo 'Registration successful for ' . $row["firstName"] . ' ' . $row["lastName"] . '.';
+                echo '</div>';
+
+                echo '<h3 class="card-title">' . $row["firstName"] . ' ' . $row["lastName"] . '</h3>';
+                echo '<p class="card-text"><strong>ID:</strong> ' . $row["userID"] . '</p>';
+                echo '<p class="card-text"><strong>Last Name:</strong> ' . $row["lastName"] . '</p>';
+                echo '<p class="card-text"><strong>First Name:</strong> ' . $row["firstName"] . '</p>';
+                echo '<p class="card-text"><strong>Middle Initial:</strong> ' . $row["middleInitial"] . '</p>';
+                echo '<p class="card-text"><strong>Age:</strong> ' . $row["age"] . '</p>';
+                echo '<p class="card-text"><strong>Contact Number:</strong> ' . $row["contactNo"] . '</p>';
+                echo '<p class="card-text"><strong>Email:</strong> ' . $row["email"] . '</p>';
+                echo '<p class="card-text"><strong>Address:</strong> ' . $row["address"] . '</p>';
+                echo '<p class="card-text"><strong>Username:</strong> ' . $row["username"] . '</p>';
+               
+                echo '<p class="card-text"><strong>Password:</strong> ' . $row["password"] . '</p>';
+                echo '<a href="login.php" class="btn btn-primary">Login</a>';
+            } else {
+                echo '<div class="alert alert-danger" role="alert">';
+                echo 'No records found in the database.';
+                echo '</div>';
+            }
+            $conn->close();
+            ?>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
